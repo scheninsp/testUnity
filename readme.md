@@ -5,6 +5,6 @@ a test library for Unity
 A demo project for Unity character import to Android Studio  
   
 <p align="left">
-    <img src="demo_Unity2AndroidStudio.gif", width="320">
+    <img src="Unity2AndroidStudio/demo_Unity2AndroidStudio.gif", width="320">
     <br>
 </p>
