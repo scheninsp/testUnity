@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:opencv="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#000000">
+
+    <FrameLayout
+        android:id = "@+id/FrameLeft"
+        android:layout_width="match_parent" android:layout_height="390dp">
+
+        <ImageView android:id = "@+id/ImageLeft"
+            android:layout_width="match_parent" android:layout_height="match_parent">
+        </ImageView>
+    </FrameLayout>
+
+    <FrameLayout android:id = "@+id/FrameRight"
+        android:layout_width="match_parent" android:layout_height="390dp"
+        android:layout_below="@id/FrameLeft">
+
+        <ImageView android:id = "@+id/ImageRight"
+            android:layout_width="match_parent" android:layout_height="match_parent">
+        </ImageView>
+    </FrameLayout>>
+
+    <FrameLayout
+        android:id="@+id/FrameInside"
+        android:layout_width="360dp"
+        android:layout_height="660dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="0dp"
+        android:layout_marginBottom="0dp">
+
+    </FrameLayout>>
+
+    <RelativeLayout
+        android:id="@+id/CVCameraView"
+        android:layout_width="120dp"
+        android:layout_height="160dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom = "5dp"
+        >
+
+        <org.opencv.android.JavaCameraView
+            android:id="@+id/tutorial1_activity_java_surface_view"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:visibility="gone"
+            opencv:camera_id="any"
+            opencv:show_fps="true" />
+
+    </RelativeLayout>>
+
+
+</RelativeLayout>
