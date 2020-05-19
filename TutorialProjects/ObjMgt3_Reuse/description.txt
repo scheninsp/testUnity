@@ -1,0 +1,2 @@
+unrecycled version 会周期更快地触发CPU的 Garbage Collector
+但是一次的GC Alloc 总量不变？
