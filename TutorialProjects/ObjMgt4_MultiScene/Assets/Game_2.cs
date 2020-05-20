@@ -19,7 +19,8 @@ public class Game_2 : PersistableObject
 
     List<Shape> shapes;
 
-    const int saveVersion = 1;
+    const int saveVersion = 2;  
+    //ver.2 with level saved
 
     public float CreationSpeed { get; set; }
     float creationProgress;
@@ -27,13 +28,27 @@ public class Game_2 : PersistableObject
     public float DestructionSpeed { get; set; }
     float destructionProgress;
 
-    private void Awake()
+    public int levelCount;
+    int LoadedLevelBuildIndex;
+
+    private void Start()
     {
         shapes = new List<Shape>();
         Debug.Log(Application.persistentDataPath);
         Application.targetFrameRate = 60;
 
-        //StartCoroutine(LoadLevel());
+        //if some level has loaded, no others should load
+        for (int i = 0; i < SceneManager.sceneCount; i++) {
+            Scene sceneTmp = SceneManager.GetSceneAt(i);
+            if (sceneTmp.name.Contains("Level "))
+            {
+                LoadedLevelBuildIndex = sceneTmp.buildIndex;
+                SceneManager.SetActiveScene(sceneTmp);
+                return;   //no need to load again
+            }
+        }
+        
+        StartCoroutine(LoadLevel(1));
 
     }
 
@@ -85,11 +100,26 @@ public class Game_2 : PersistableObject
         }
         else if (Input.GetKeyDown(testKey))
         {
-            StartCoroutine(LoadLevel());
+            //StartCoroutine(LoadLevel());
             //SceneManager.LoadScene("Level 1", LoadSceneMode.Additive);
             //Scene sceneTmp = SceneManager.GetSceneByName("Level 1");
             //Debug.Log("GetSceneByName : " + sceneTmp.name);
             //LoadLevel();
+        }
+        else
+        {
+            //load select level
+            for(int i=1; i<=levelCount; i++)
+            {
+                if(Input.GetKeyDown(KeyCode.Alpha0 + i))
+                {
+                    Debug.Log("Select Level : " + i);
+                    BeginNewGame();
+                    StartCoroutine(LoadLevel(i));
+                    return;
+                }
+            }
+
         }
 
 
@@ -142,6 +172,7 @@ public class Game_2 : PersistableObject
     public override void Save(GameDataWriter writer)
     {
         writer.Write(saveVersion);
+        writer.Write(LoadedLevelBuildIndex);
         writer.Write(shapes.Count);
         for (int i = 0; i < shapes.Count; i++)
         {
@@ -162,6 +193,7 @@ public class Game_2 : PersistableObject
             return;
         }
 
+        StartCoroutine(LoadLevel(reader.ReadInt()));
         int count = reader.ReadInt();
         //Debug.Log(count);
 
@@ -176,17 +208,43 @@ public class Game_2 : PersistableObject
             shapes.Add(o);
         }
     }
-
+    
+    /*
     IEnumerator LoadLevel()
     {
-        SceneManager.LoadScene("Level 1", LoadSceneMode.Additive);
+        enabled = false;  //disable current game components while loading
+
+        //SceneManager.LoadScene("Level 1", LoadSceneMode.Additive);
+        yield return SceneManager.LoadSceneAsync("Level 1", LoadSceneMode.Additive);
 
         Scene sceneTmp = SceneManager.GetSceneByName("Level 1");
         //Debug.Log("GetSceneByName : " + sceneTmp.name);
 
         //while (!sceneTmp.isLoaded) { yield return null; }//wait for loading scene
-
-        yield return null;
+        //yield return null;
         SceneManager.SetActiveScene(sceneTmp);
+
+        enabled = true;
     }
+    */
+
+    IEnumerator LoadLevel(int levelBuildIndex)
+    {
+        enabled = false;
+        if(LoadedLevelBuildIndex > 0)
+        {
+            yield return SceneManager.UnloadSceneAsync(
+           LoadedLevelBuildIndex);
+        }
+
+        yield return SceneManager.LoadSceneAsync(
+            levelBuildIndex, LoadSceneMode.Additive);
+
+        SceneManager.SetActiveScene(
+            SceneManager.GetSceneByBuildIndex(levelBuildIndex)
+        );
+        LoadedLevelBuildIndex = levelBuildIndex;
+        enabled = true;
+    }
+
 }

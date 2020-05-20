@@ -88,7 +88,7 @@ LightmapSettings:
     m_PVRFilteringAtrousPositionSigmaIndirect: 2
     m_PVRFilteringAtrousPositionSigmaAO: 1
     m_ShowResolutionOverlay: 1
-  m_LightingDataAsset: {fileID: 112000004, guid: 1f97dd899a26cc74e8aac594b1b547e3,
+  m_LightingDataAsset: {fileID: 112000000, guid: 2d71347d914c5e94080588338598f479,
     type: 2}
   m_UseShadowmask: 1
 --- !u!196 &4
@@ -140,7 +140,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 8
   m_Type: 1
-  m_Color: {r: 0, g: 0.28873968, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.029678369, b: 0, a: 1}
   m_Intensity: 2
   m_Range: 10
   m_SpotAngle: 30
@@ -208,7 +208,7 @@ TextMesh:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2076900649}
-  m_Text: Level 1
+  m_Text: Level 2
   m_OffsetZ: 0
   m_CharacterSize: 1
   m_LineSpacing: 1
