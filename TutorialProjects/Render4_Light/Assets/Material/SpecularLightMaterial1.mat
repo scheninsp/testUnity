@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: LightMaterial2
+  m_Name: SpecularLightMaterial1
   m_Shader: {fileID: 4800000, guid: b692b53ab97c2854787f9e6d607bdb1c, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -67,6 +67,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _Smoothness: 0.03
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

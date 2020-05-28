@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Scenes/Scene2_MultiLight.unity
+    guid: 28acc784fca76bd4ebb42a37f5f1015b
   m_configObjects: {}
