@@ -1,7 +1,7 @@
 # testUnity
 a test library for Unity  
 
-(1)Unity2AndroidStudio  
+(1) Unity2AndroidStudio  
 A demo project for Unity character import to Android Studio  
   
 <p align="left">
@@ -9,7 +9,7 @@ A demo project for Unity character import to Android Studio
     <br>
 </p>
 
-(3)Object Management Series of Catlike Tutorial   
+(2) Object Management Series of Catlike Tutorial   
 C# Tutorial and design patterns  
   
 <p align="left">
@@ -17,7 +17,7 @@ C# Tutorial and design patterns
     <br>
 </p>
 
-(2)Render Series of Catlike Tutorial   
+(3) Render Series of Catlike Tutorial   
 Self-implemented render series  
   
 <p align="left">
