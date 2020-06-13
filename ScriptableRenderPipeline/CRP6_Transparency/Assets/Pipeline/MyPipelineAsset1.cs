@@ -41,6 +41,7 @@ public class MyPipelineAsset1 : RenderPipelineAsset
     [SerializeField, HideInInspector]
     Vector3 fourCascadesSplit = new Vector3(0.067f, 0.2f, 0.467f);
 
+
     protected override IRenderPipeline InternalCreatePipeline()
     {
         Vector3 shadowCascadeSplit = shadowCascades == ShadowCascades.Four ?
