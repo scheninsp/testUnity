@@ -7,41 +7,12 @@
 #define UNITY_MATRIX_M unity_ObjectToWorld
 #define UNITY_MATRIX_I_M unity_WorldToObject
 
-//this must come after our self-defined UNITY_MATRIX_M
-#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
-
 //for PerceptualRoughnessToMipmapLevel()
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ImageBasedLighting.hlsl"
 //for DecodeHDREnvironment()
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/EntityLighting.hlsl"
 
 #include "Lighting1.hlsl"   //surface struct
-
-struct VertexInput {
-	float4 pos : POSITION;
-	float3 normal : NORMAL;
-	float2 uv : TEXCOORD0;
-	float2 lightmapUV : TEXCOORD1;
-	float2 dynamicLightmapUV : TEXCOORD2;
-
-	UNITY_VERTEX_INPUT_INSTANCE_ID
-};
-
-struct VertexOutput {
-	float4 clipPos : SV_POSITION;
-	float3 normal : TEXCOORD0;
-	float3 worldPos : TEXCOORD1;
-	float3 vertexLighting : TEXCOORD2;
-	float2 uv : TEXCOORD3;
-	#if defined(LIGHTMAP_ON)
-		float2 lightmapUV : TEXCOORD4;
-	#endif
-	#if defined(DYNAMICLIGHTMAP_ON)
-		float2 dynamicLightmapUV : TEXCOORD5;
-	#endif
-	UNITY_VERTEX_INPUT_INSTANCE_ID
-};
-
 
 //difference between HLSL and CG, you need to explicitly declare
 CBUFFER_START(UnityPerFrame)
@@ -74,13 +45,6 @@ CBUFFER_START(UnityPerMaterial)
 float4 _MainTex_ST;
 float _Cutoff;
 CBUFFER_END
-
-UNITY_INSTANCING_BUFFER_START(PerInstance)  //PerInstance is defined in macro
-UNITY_DEFINE_INSTANCED_PROP(float4, _Color)
-UNITY_DEFINE_INSTANCED_PROP(float, _Smoothness)
-UNITY_DEFINE_INSTANCED_PROP(float, _Metallic)
-UNITY_DEFINE_INSTANCED_PROP(float4, _EmissionColor)
-UNITY_INSTANCING_BUFFER_END(PerInstance)
 
 #define MAX_VISIBLE_LIGHTS 16
 CBUFFER_START(_LightBuffer)
@@ -131,6 +95,44 @@ SAMPLER(samplerunity_ProbeVolumeSH);
 
 TEXTURE2D(unity_DynamicLightmap);
 SAMPLER(samplerunity_DynamicLightmap);
+
+
+//this must come after our self-defined UNITY_MATRIX_M
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
+
+UNITY_INSTANCING_BUFFER_START(PerInstance)  //PerInstance is defined in macro
+UNITY_DEFINE_INSTANCED_PROP(float4, _Color)
+UNITY_DEFINE_INSTANCED_PROP(float, _Smoothness)
+UNITY_DEFINE_INSTANCED_PROP(float, _Metallic)
+UNITY_DEFINE_INSTANCED_PROP(float4, _EmissionColor)
+UNITY_INSTANCING_BUFFER_END(PerInstance)
+
+
+struct VertexInput {
+	float4 pos : POSITION;
+	float3 normal : NORMAL;
+	float2 uv : TEXCOORD0;
+	float2 lightmapUV : TEXCOORD1;
+	float2 dynamicLightmapUV : TEXCOORD2;
+
+	UNITY_VERTEX_INPUT_INSTANCE_ID
+};
+
+struct VertexOutput {
+	float4 clipPos : SV_POSITION;
+	float3 normal : TEXCOORD0;
+	float3 worldPos : TEXCOORD1;
+	float3 vertexLighting : TEXCOORD2;
+	float2 uv : TEXCOORD3;
+#if defined(LIGHTMAP_ON)
+	float2 lightmapUV : TEXCOORD4;
+#endif
+#if defined(DYNAMICLIGHTMAP_ON)
+	float2 dynamicLightmapUV : TEXCOORD5;
+#endif
+	UNITY_VERTEX_INPUT_INSTANCE_ID
+};
+
 
 
 float3 SampleLightProbes(LitSurface s) {
@@ -252,11 +254,12 @@ float CascadedShadowAttenuation(float3 worldPos) {
 		return 1.0;
 	#endif
 	
-	if (DistanceToCameraSqr(worldPos) > _GlobalShadowData.y) {
+	if (DistanceToCameraSqr(worldPos) > _GlobalShadowData.y || !InsideCascadeCullingSphere(_GlobalShadowData.z -1, worldPos)) {
 		//.y is sqaured shadow distance,
 		// synchronize cascade shadow distance with configured global shadow distance
 		return 1.0;
 	}
+
 
 	float4 cascadeFlags = float4(
 		InsideCascadeCullingSphere(0, worldPos),

@@ -47,7 +47,7 @@ public class MyPipeline1 : RenderPipeline
     //.z >0 is directional, after judged, zw are tileOffset * tileScale
     static int globalShadowDataId =
         Shader.PropertyToID("_GlobalShadowData");
-    //_GlobalShadowData : Vector4 ( tileScale, shadowDistance^2, 0...)
+    //_GlobalShadowData : Vector4 ( tileScale, shadowDistance^2, cascadedNumber,...)
     static int cascadedShadowMapId =
         Shader.PropertyToID("_CascadedShadowMap");
     static int worldToShadowCascadeMatricesId =
@@ -656,7 +656,7 @@ void RenderShadows(ScriptableRenderContext context)
         shadowBuffer.BeginSample("Render Shadows");
 
         shadowBuffer.SetGlobalVector(globalShadowDataId,
-            new Vector4(0f, shadowDistance * shadowDistance));
+            new Vector4(0f, shadowDistance * shadowDistance, shadowCascades));
 
         context.ExecuteCommandBuffer(shadowBuffer);
         shadowBuffer.Clear();
