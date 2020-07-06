@@ -1,0 +1,57 @@
+sampler2D _MainTex;
+float4 _MainTex_ST;
+float4 _Color;
+
+struct VertexData {
+	float4 position : POSITION;
+	float3 normal : NORMAL;
+	float2 uv : TEXCOORD0;
+};
+
+struct Interpolators {
+	float4 position : SV_POSITION;
+	float2 uv : TEXCOORD0;
+	float3 normal : TEXCOORD1;
+	float3 worldPos : TEXCOORD2;
+
+};
+
+struct Light {
+	float3 dir;
+	float3 color;
+	float3 ndotl;
+};
+
+Interpolators vert(VertexData v) {
+	Interpolators i;
+	i.uv = TRANSFORM_TEX(v.uv, _MainTex);
+	i.position = UnityObjectToClipPos(v.position);
+	i.worldPos = mul(unity_ObjectToWorld, v.position);
+	i.normal = mul(transpose((float3x3)unity_WorldToObject), v.normal);  //world space normals
+	i.normal = normalize(i.normal);
+	return i;
+}
+
+
+float4 frag(Interpolators i) : SV_TARGET{
+
+	//float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
+	float4 diffSamplerColor = tex2D(_MainTex, i.uv);  //use Texture as albedo
+
+	Light light;
+	
+	//for Point light
+	light.dir = normalize(_WorldSpaceLightPos0.xyz - i.worldPos);
+	
+	UNITY_LIGHT_ATTENUATION(attenuation, 0, i.worldPos);
+	//this function switches with #define POINT in its Pass{}
+
+	light.color = _LightColor0.rgb * attenuation;
+
+	light.ndotl = DotClamped(i.normal, light.dir);
+
+	float3 diffuse = diffSamplerColor * light.color * light.ndotl;
+
+	return float4(diffuse, diffSamplerColor.a);
+
+}
