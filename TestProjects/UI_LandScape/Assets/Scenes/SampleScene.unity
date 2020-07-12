@@ -296,7 +296,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugInfoText: {fileID: 1302025896}
   leftPanelBackGround: {fileID: 1404679169}
+  leftPanelRoller: {fileID: 1362085982}
   leftPanelPointer: {fileID: 1574656139}
+  playerBehavior: {fileID: 1430826457}
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -683,7 +685,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.22352941, g: 0.654902, b: 0.8509804, a: 0.23529412}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -962,6 +964,7 @@ GameObject:
   - component: {fileID: 1430826455}
   - component: {fileID: 1430826454}
   - component: {fileID: 1430826453}
+  - component: {fileID: 1430826457}
   m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
@@ -1041,6 +1044,19 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1430826457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1430826452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9356aecec7b76a3468f740c37fb6833c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerTransform: {fileID: 1430826456}
 --- !u!1 &1574656137
 GameObject:
   m_ObjectHideFlags: 0

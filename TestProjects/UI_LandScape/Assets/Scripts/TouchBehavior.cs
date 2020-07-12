@@ -18,6 +18,8 @@ public class TouchBehavior : MonoBehaviour
     public Image leftPanelPointer;
     float radiusleftPanelPointer;
 
+    public PlayerBehavior playerBehavior;
+
     private string debugInfoTextDefault = "Touch Debug Info";
     private string debugInfoTextLeftPanelTouched = "LeftPanel Touched";
     private string debugInfoTextLeftPanelMoved = "LeftPanel Moved";
@@ -32,6 +34,8 @@ public class TouchBehavior : MonoBehaviour
     private Vector2 touchLastPosition, touchCurrentPosition;
     private Vector2 moveLeftPanelPointerVector;
     float screenToUiScaler;
+
+
     private void Awake()
     {
         radiusleftPanelRoller = leftPanelRoller.GetComponent<RectTransform>().rect.width / 2;
@@ -150,11 +154,14 @@ public class TouchBehavior : MonoBehaviour
                 }
             }
 
-            tmpDir = screenToUiScaler * moveLength * tmpDir;
+            Vector2 tmpMoveVector = screenToUiScaler * moveLength * tmpDir;
 
 
-            leftPanelPointer.GetComponent<RectTransform>().anchoredPosition = tmpDir;
+            leftPanelPointer.GetComponent<RectTransform>().anchoredPosition = tmpMoveVector;
 
+
+            //player control
+            playerBehavior.playerMove(tmpDir);
         }
 
 
