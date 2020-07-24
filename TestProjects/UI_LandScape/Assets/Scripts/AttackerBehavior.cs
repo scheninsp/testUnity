@@ -32,7 +32,7 @@ public class AttackerBehavior : MonoBehaviour
         TimeSpan dur1 = DateTime.Now.Subtract(timer);
 
         this.transform.RotateAround(playerTransform.position,
-        rotateAxis, Time.deltaTime * rotateSpeed);
+        playerTransform.localToWorldMatrix * rotateAxis, Time.deltaTime * rotateSpeed);
         if(dur1.TotalSeconds > 0.15f)
         {
             gameObject.SetActive(false);

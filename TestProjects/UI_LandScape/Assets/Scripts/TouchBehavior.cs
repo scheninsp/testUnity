@@ -53,6 +53,7 @@ public class TouchBehavior : MonoBehaviour
         //set initial state
         leftPanelPressed = false;
         someTouchLeavesLeftPanel = false;
+        debugInfoText.text = null;
 
         touchCounts = Input.touchCount;
         
@@ -86,7 +87,7 @@ public class TouchBehavior : MonoBehaviour
                                 (theTouch.phase == TouchPhase.Stationary || theTouch.phase == TouchPhase.Moved))
                             {   
                                 someTouchLeavesLeftPanel = false;
-                                leftPanelPressed = true;
+                                //leftPanelPressed = true;
                                 processLeftPanel(theTouch);
                             }
 
@@ -108,7 +109,7 @@ public class TouchBehavior : MonoBehaviour
 
                 leftPanelPointer.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
                 leftPanelRoller.color = color1;
-                leftPanelPressed = false;
+                //leftPanelPressed = false;
             }
 
         }
@@ -130,7 +131,7 @@ public class TouchBehavior : MonoBehaviour
             
         }
 
-        if (theTouch.phase == TouchPhase.Moved)
+        if (theTouch.phase == TouchPhase.Stationary || theTouch.phase == TouchPhase.Moved)
         {
             //moved touch
             touchCurrentPosition = theTouch.position;
