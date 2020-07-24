@@ -7,7 +7,7 @@ public class PlayerBehavior : MonoBehaviour
 
     public Transform playerTransform;
 
-    private float speed = 0.2f;
+    private float speed = 0.05f;
     
 
     public void playerMove(Vector2 vec)

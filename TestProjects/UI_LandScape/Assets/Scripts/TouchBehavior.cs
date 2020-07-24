@@ -18,6 +18,9 @@ public class TouchBehavior : MonoBehaviour
     public Image leftPanelPointer;
     float radiusleftPanelPointer;
 
+    //public Image rightPanelBackGround;
+    //public Button attackButton;
+
     public PlayerBehavior playerBehavior;
 
     private string debugInfoTextDefault = "Touch Debug Info";
@@ -94,13 +97,14 @@ public class TouchBehavior : MonoBehaviour
                             }
                         }
                     }
+
                 }
 
             }//end iTouch = 0~touchCounts
 
             if (leftPanelPressed == false)
             {
-                debugInfoText.text = debugInfoTextLeftPanelUntouched;
+                //debugInfoText.text = debugInfoTextLeftPanelUntouched;
 
                 leftPanelPointer.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
                 leftPanelRoller.color = color1;
