@@ -19,15 +19,41 @@ public class PlayerBehavior : MonoBehaviour
     DateTime timer = new DateTime();
 
     float dashDuration = 0.2f;
-    float dashCoolDown = 1f;
+    float dashCoolDown = 0.5f;
     float dashCoolDownTimer = -1f;
 
     Vector3 currentFowardPointer;
 
+    bool lockState = false;
+    Shape lockedTarget = null;
 
     private void Awake()
     {
         currentFowardPointer = new Vector3(0,0,1);
+    }
+
+    private void Update()
+    {
+        //return to state 1
+        TimeSpan dur1 = DateTime.Now.Subtract(timer);
+        if (stateFlag == 2 && dur1.TotalSeconds > dashDuration)
+        {
+            stateFlag = 1;
+            speed = speedSettings.moveSpeed;
+        }
+
+        //Skill cooldown
+        if (dashCoolDownTimer > 0)
+        {
+            dashCoolDownTimer -= Time.deltaTime;
+        }
+
+        //Locked State
+        if(lockState == true)
+        {
+            this.playerRotateTo(lockedTarget.transform.position);
+        }
+
     }
 
     public void playerMove(Vector2 vec)
@@ -64,22 +90,16 @@ public class PlayerBehavior : MonoBehaviour
         return rotateQuater;
     }
 
-    private void Update()
-    {   
-        //return to state 1
-        TimeSpan dur1 = DateTime.Now.Subtract(timer);
-        if (stateFlag == 2 && dur1.TotalSeconds > dashDuration)
-        {
-            stateFlag = 1;
-            speed = speedSettings.moveSpeed;
-        }
+    public void lockTarget(Shape target)
+    {
+        lockedTarget = target;
+        lockState = true;
+    }
 
-        //Skill cooldown
-        if(dashCoolDownTimer > 0)
-        {
-            dashCoolDownTimer -= Time.deltaTime;
-        }
-
+    public void unlockTarget()
+    {
+        lockState = false;
+        lockedTarget = null;
     }
 
 }

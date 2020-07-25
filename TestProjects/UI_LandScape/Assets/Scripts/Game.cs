@@ -16,6 +16,10 @@ public class Game : MonoBehaviour
 
     public PlayerBehavior playerBehavior;
 
+    public PassiveLayerBehavior passiveLayerBehavior;
+
+    int playerLockedTargetIndex = -1;
+
     void Awake()
     {
         shapes = new List<Shape>();
@@ -25,6 +29,16 @@ public class Game : MonoBehaviour
     void Start()
     {
         BeginNewGame();
+    }
+
+    private void Update()
+    {
+        if(shapes.Count == 0)
+        {
+            passiveLayerBehavior.removeLockImage();
+            playerBehavior.unlockTarget();
+        }
+
     }
 
     void BeginNewGame()
@@ -71,6 +85,14 @@ public class Game : MonoBehaviour
         if (shapes.Count > 0)
         {
             int index = shapes.Count - 1;
+
+            if(index == playerLockedTargetIndex)
+            {
+                passiveLayerBehavior.removeLockImage();
+                playerBehavior.unlockTarget();
+                playerLockedTargetIndex = -1;
+            }
+
             targetFactory.Reclaim(shapes[index]);
             shapes.RemoveAt(index);
         }
@@ -99,6 +121,10 @@ public class Game : MonoBehaviour
             {
                 Vector3 targetPositionFinal = shapes[index_closest].GetComponent<Transform>().position;
                 Quaternion rotateAngle = playerBehavior.playerRotateTo(targetPositionFinal);
+                playerLockedTargetIndex = index_closest;
+                playerBehavior.lockTarget(shapes[index_closest]);
+
+                passiveLayerBehavior.generateLockImage(shapes[index_closest]);
             }
 
         }
