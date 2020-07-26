@@ -33,7 +33,7 @@ public class Game : MonoBehaviour
 
     private void Update()
     {
-        if(shapeControllers.Count == 0)
+        if(shapeControllers.Count == 0 || shapeControllers[playerLockedTargetIndex].state != 1)
         {
             passiveLayerBehavior.removeLockImage();
             playerBehavior.unlockTarget();
@@ -75,6 +75,14 @@ public class Game : MonoBehaviour
     public void CreateTarget()
     {
         ShapeController o = targetFactory.GetRandom();
+        
+        //put targets under one layer
+        o.gameObject.transform.SetParent(this.transform.GetChild(0).transform);
+        o.gameObject.layer = this.transform.GetChild(0).gameObject.layer;
+        foreach (Transform tran in o.gameObject.GetComponentsInChildren<Transform>(true))
+        {
+            tran.gameObject.layer = this.transform.GetChild(0).gameObject.layer;
+        }
 
         Transform t = o.transform;
         t.localPosition = new Vector3(Random.Range(-10f,10f), headLevelPosition,
@@ -147,14 +155,12 @@ public class Game : MonoBehaviour
 
     }
 
-
-    public void DestroyTargetByWeapon()
+    public void TargetAttack()
     {
-        if (shapeControllers.Count > 0)
+        if (shapeControllers.Count > 0 && shapeControllers[shapeControllers.Count-1].state == 1)
         {
-            int index = shapeControllers.Count - 1;
-            shapeControllers[index].DestroyShape();
+            shapeControllers[shapeControllers.Count - 1].Attack();
         }
-    }
 
+    }
 }

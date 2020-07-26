@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Target Controller Factory
   m_EditorClassIdentifier: 
   prefabs:
-  - {fileID: 7517174893527848007, guid: 03d15afef4269134c9225c3d6fc93944, type: 3}
+  - {fileID: 9007159917375465497, guid: 03d15afef4269134c9225c3d6fc93944, type: 3}
   materials:
   - {fileID: 2100000, guid: bf14e1fe1099513469ef9abb589be4a8, type: 2}
   recycle: 1

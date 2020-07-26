@@ -24,16 +24,21 @@ public class DestructedShape : MonoBehaviour
 
     }
 
-    public void Explode()
+    public void Explode(Vector3 normalizedDirection)
     {
-        float explosionForce = UnityEngine.Random.Range(50, 100);
-        Vector3 explosionPosition = this.transform.position;
-        float explosionRadius = 1f;
 
         foreach ( Transform child in this.transform)
         {
-            child.GetComponent<Rigidbody>().AddExplosionForce(explosionForce,
-                explosionPosition, explosionRadius);
+
+            Vector3 forceDir = normalizedDirection;
+            forceDir.y = forceDir.y + UnityEngine.Random.Range(0f, 2f);
+            forceDir.x = forceDir.x + UnityEngine.Random.Range(-0.5f, 0.5f);
+            forceDir.z = forceDir.z + UnityEngine.Random.Range(-0.5f, 0.5f);
+
+            forceDir.Normalize();
+
+            float forceVal = UnityEngine.Random.Range(400f, 600f);
+            child.GetComponent<Rigidbody>().AddForce(forceVal * forceDir);
         }
 
         explodedState = true;

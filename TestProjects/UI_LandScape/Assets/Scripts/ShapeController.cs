@@ -54,11 +54,12 @@ public class ShapeController : MonoBehaviour
         }
     }
 
-    public void DestroyShape()
+    public void DestroyShape(Vector3 normalizedDirection)
+    //normalizedDirection: from player to target
     {
         this.transform.GetChild(0).gameObject.SetActive(false);
         this.transform.GetChild(1).gameObject.SetActive(true);
-        this.transform.GetChild(1).GetComponent<DestructedShape>().Explode();
+        this.transform.GetChild(1).GetComponent<DestructedShape>().Explode(normalizedDirection);
         state = 2;
     }
 
@@ -76,5 +77,14 @@ public class ShapeController : MonoBehaviour
         this.transform.GetChild(0).gameObject.SetActive(true);
         this.transform.GetChild(1).gameObject.SetActive(false);
         state = 1;
+    }
+
+    public void Attack()
+    {
+        if(this.transform.GetChild(0).gameObject.activeSelf == true &&
+            this.transform.GetChild(1).gameObject.activeSelf == false)
+        {
+            this.transform.GetChild(0).gameObject.GetComponent<Shape>().StartWarning();
+        }
     }
 }
