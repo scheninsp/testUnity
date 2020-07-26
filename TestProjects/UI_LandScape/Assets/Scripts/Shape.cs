@@ -11,39 +11,9 @@ public class Shape : MonoBehaviour
         meshRenderer = GetComponent<MeshRenderer>();
     }
 
-    //make a property
-    public int ShapeId
-    {
-        get
-        {
-            return shapeId;
-        }
-        set
-        {
-            if (shapeId == int.MinValue && value != int.MinValue)
-            {
-                shapeId = value;
-            }
-            else
-            {
-                Debug.LogError("Not allowed to change shapeId");
-            }
-        }
-    }
-    int shapeId = int.MinValue;
-
-
-    public int MaterialId
-    {
-        get;
-        private set; //forbidden
-    }
-    int materialId = int.MinValue;
-
-    public void SetMaterial(Material material, int materialId)
+    public void SetMaterial(Material material)
     {
         meshRenderer.material = material;
-        MaterialId = materialId;
     }
 
 
@@ -65,6 +35,10 @@ public class Shape : MonoBehaviour
         }
         shaderPropertyBlock.SetColor(colorPropertyId, color);
         meshRenderer.SetPropertyBlock(shaderPropertyBlock);
+    }
+
+    public void Reclaim()
+    { //no action
     }
 
 }

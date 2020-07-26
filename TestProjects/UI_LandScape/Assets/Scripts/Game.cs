@@ -5,9 +5,9 @@ using UnityEngine;
 public class Game : MonoBehaviour
 {
 
-    public TargetFactory targetFactory;
+    public TargetControllerFactory targetFactory;
 
-    List<Shape> shapes;
+    List<ShapeController> shapeControllers;
 
     private float headLevelPosition = 0.8f;
 
@@ -22,7 +22,7 @@ public class Game : MonoBehaviour
 
     void Awake()
     {
-        shapes = new List<Shape>();
+        shapeControllers = new List<ShapeController>();
         Application.targetFrameRate = 60;
     }
 
@@ -33,10 +33,20 @@ public class Game : MonoBehaviour
 
     private void Update()
     {
-        if(shapes.Count == 0)
+        if(shapeControllers.Count == 0)
         {
             passiveLayerBehavior.removeLockImage();
             playerBehavior.unlockTarget();
+        }
+
+        //reclaim state 0 shapeControllers
+        for(int i=0; i<shapeControllers.Count; i++)
+        {
+            if(shapeControllers[i].state == 0)
+            {
+                targetFactory.Reclaim(shapeControllers[i]);
+                shapeControllers.RemoveAt(i);
+            }
         }
 
     }
@@ -44,11 +54,11 @@ public class Game : MonoBehaviour
     void BeginNewGame()
     {
         //if begin from a current state, clear current state
-        for (int i = 0; i < shapes.Count; i++)
+        for (int i = 0; i < shapeControllers.Count; i++)
         {
-            targetFactory.Reclaim(shapes[i]);
+            targetFactory.Reclaim(shapeControllers[i]);
         }
-        shapes.Clear();
+        shapeControllers.Clear();
 
         if(initialPlayerTransform == null)
         {
@@ -64,27 +74,27 @@ public class Game : MonoBehaviour
 
     public void CreateTarget()
     {
-        Shape o = targetFactory.GetRandom();
+        ShapeController o = targetFactory.GetRandom();
 
         Transform t = o.transform;
-        t.localPosition = new Vector3(Random.Range(-20f,20f), headLevelPosition,
-            Random.Range(1f, 20f));
+        t.localPosition = new Vector3(Random.Range(-10f,10f), headLevelPosition,
+            Random.Range(1f, 10f));
         //t.localRotation = Random.rotation;
         t.localScale = Vector3.one * Random.Range(0.5f, 2f);
         /*o.SetColor(Random.ColorHSV(hueMin: 0f, hueMax: 1f,
             saturationMin: 0.5f, saturationMax: 1f, valueMin: 0.25f, valueMax: 1f,
             alphaMin: 1f, alphaMax: 1f));*/
 
-        shapes.Add(o);
+        shapeControllers.Add(o);
 
     }
 
-    //destroy last generated shape
+    //destroy last generated ShapeController
     public void DestroyTarget()
     {
-        if (shapes.Count > 0)
+        if (shapeControllers.Count > 0)
         {
-            int index = shapes.Count - 1;
+            int index = shapeControllers.Count - 1;
 
             if(index == playerLockedTargetIndex)
             {
@@ -93,42 +103,58 @@ public class Game : MonoBehaviour
                 playerLockedTargetIndex = -1;
             }
 
-            targetFactory.Reclaim(shapes[index]);
-            shapes.RemoveAt(index);
+            targetFactory.Reclaim(shapeControllers[index]);
+            shapeControllers.RemoveAt(index);
         }
     }
 
     public void LockTarget()
     {
-        if (shapes.Count > 0)
+        if (shapeControllers.Count > 0)
         {
             //calculate distance to all targets, select closest
             float dist_closest = 99999f;
             int index_closest = -1;
-            for (int i = 0; i < shapes.Count; i++)
+            for (int i = 0; i < shapeControllers.Count; i++)
             {
-                Vector3 targetPosition = shapes[i].GetComponent<Transform>().position;
-                targetPosition = playerTransform.position - targetPosition;
-                float dist = targetPosition.magnitude;
-                if (dist < dist_closest)
+                if(shapeControllers[i].state == 1)  //activated as Shape
                 {
-                    dist_closest = dist;
-                    index_closest = i;
+                    Vector3 targetPosition = shapeControllers[i].transform.GetChild(0).position;
+                    targetPosition = playerTransform.position - targetPosition;
+                    float dist = targetPosition.magnitude;
+                    if (dist < dist_closest)
+                    {
+                        dist_closest = dist;
+                        index_closest = i;
+                    }
                 }
+
             }
 
             if(index_closest > -1)
             {
-                Vector3 targetPositionFinal = shapes[index_closest].GetComponent<Transform>().position;
+                Vector3 targetPositionFinal = shapeControllers[index_closest].GetComponent<Transform>().position;
                 Quaternion rotateAngle = playerBehavior.playerRotateTo(targetPositionFinal);
                 playerLockedTargetIndex = index_closest;
-                playerBehavior.lockTarget(shapes[index_closest]);
 
-                passiveLayerBehavior.generateLockImage(shapes[index_closest]);
+                Shape targetShape = shapeControllers[index_closest].transform.GetChild(0).gameObject.GetComponent<Shape>();
+                playerBehavior.lockTarget(targetShape);
+
+                passiveLayerBehavior.generateLockImage(targetShape);
             }
 
         }
 
+    }
+
+
+    public void DestroyTargetByWeapon()
+    {
+        if (shapeControllers.Count > 0)
+        {
+            int index = shapeControllers.Count - 1;
+            shapeControllers[index].DestroyShape();
+        }
     }
 
 }

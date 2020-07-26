@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu]
-public class TargetFactory : ScriptableObject
+public class TargetControllerFactory : ScriptableObject
 {
     [SerializeField]
-    Shape[] prefabs;
+    ShapeController[] prefabs;
 
     [SerializeField]
     Material[] materials;
@@ -14,28 +14,28 @@ public class TargetFactory : ScriptableObject
     [SerializeField]
     bool recycle;
 
-    List<Shape>[] pools;  //each prefab has a pool 
+    List<ShapeController>[] pools;  //each prefab has a pool 
 
     void CreatePools()
     {
-        pools = new List<Shape>[prefabs.Length];
+        pools = new List<ShapeController>[prefabs.Length];
         for (int i = 0; i < pools.Length; i++)
         {
-            pools[i] = new List<Shape>();
+            pools[i] = new List<ShapeController>();
         }
 
     }
 
-    public Shape Get(int shapeId = 0, int materialId = 0)
+    public ShapeController Get(int shapeId = 0, int materialId = 0)
     {
-        Shape inst;
+        ShapeController inst;
         if (recycle)
         {
             if (pools == null)
             {
                 CreatePools();
             }
-            List<Shape> pool = pools[shapeId];
+            List<ShapeController> pool = pools[shapeId];
             int lastIndex = pool.Count - 1;
             if (lastIndex > 0)
             {
@@ -58,13 +58,13 @@ public class TargetFactory : ScriptableObject
         return inst;
     }
 
-    public Shape GetRandom()
+    public ShapeController GetRandom()
     {
         return Get(Random.Range(0, prefabs.Length),
             Random.Range(0, materials.Length));
     }
 
-    public void Reclaim(Shape shapeToRecycle)
+    public void Reclaim(ShapeController shapeToRecycle)
     {
         if (recycle)
         {
@@ -72,6 +72,7 @@ public class TargetFactory : ScriptableObject
             {
                 CreatePools();
             }
+            shapeToRecycle.gameObject.GetComponent<ShapeController>().Reclaim();
             pools[shapeToRecycle.ShapeId].Add(shapeToRecycle);
             shapeToRecycle.gameObject.SetActive(false);
         }

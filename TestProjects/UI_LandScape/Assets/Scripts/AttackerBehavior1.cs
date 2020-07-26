@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class boxDestructionBehavior : MonoBehaviour
+public class AttackerBehavior1 : MonoBehaviour
 {
     // Start is called before the first frame update
     void Start()
