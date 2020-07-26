@@ -57,11 +57,17 @@ public class Shape : MonoBehaviour
         {
             this.transform.GetChild(i).gameObject.SetActive(false);
         }
+        state = 0;
+        dur1 = new TimeSpan();
+
     }
 
     public void StartWarning()
     {
-        StartCoroutine(Warning1());
+        if(state == 0)
+        {
+            StartCoroutine(Warning1());
+        }
     }
 
     private IEnumerator Warning1()

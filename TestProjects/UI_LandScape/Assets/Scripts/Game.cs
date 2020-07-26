@@ -88,7 +88,7 @@ public class Game : MonoBehaviour
         t.localPosition = new Vector3(Random.Range(-10f,10f), headLevelPosition,
             Random.Range(1f, 10f));
         //t.localRotation = Random.rotation;
-        t.localScale = Vector3.one * Random.Range(0.5f, 2f);
+        t.localScale = Vector3.one * Random.Range(0.5f, 1.5f);
         /*o.SetColor(Random.ColorHSV(hueMin: 0f, hueMax: 1f,
             saturationMin: 0.5f, saturationMax: 1f, valueMin: 0.25f, valueMax: 1f,
             alphaMin: 1f, alphaMax: 1f));*/

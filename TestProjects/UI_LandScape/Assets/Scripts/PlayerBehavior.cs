@@ -12,7 +12,7 @@ public class PlayerBehavior : MonoBehaviour
     public class speedSettings
     {
         public static float moveSpeed = 0.1f;
-        public static float dashSpeed = 0.4f;
+        public static float dashSpeed = 0.2f;
     }
     float speed = speedSettings.moveSpeed;
 
