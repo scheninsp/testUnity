@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class PlayerBehavior : MonoBehaviour
@@ -18,14 +19,22 @@ public class PlayerBehavior : MonoBehaviour
 
     DateTime timer = new DateTime();
 
-    float dashDuration = 0.2f;
-    float dashCoolDown = 0.5f;
+    const float dashDuration = 0.2f;
+    const float dashCoolDown = 0.5f;
     float dashCoolDownTimer = -1f;
 
     Vector3 currentFowardPointer;
 
     bool lockState = false;
     Shape lockedTarget = null;
+
+    //state 0 : normal
+    //state 1 : attacked
+    int state = 0;
+
+    const float shakeXposMax = 0.1f;
+    const int repeatTimes = 2;
+    const float attackedCantMoveDuration = 0.5f;
 
     private void Awake()
     {
@@ -58,36 +67,60 @@ public class PlayerBehavior : MonoBehaviour
 
     public void playerMove(Vector2 vec)
     {
-        Vector3 translateVector = new Vector3(vec.x, 0, vec.y);
-        translateVector = playerTransform.worldToLocalMatrix * translateVector;
-        playerTransform.Translate(translateVector * speed);
-    }
-
-    public void playerDash()
-    {
-        if(stateFlag != 2 && dashCoolDownTimer<=0)
+        if(state != 1)
         {
-            dashCoolDownTimer = dashCoolDown;
-            stateFlag = 2;
-            timer = DateTime.Now;
-            this.speed = speedSettings.dashSpeed;
+            Vector3 translateVector = new Vector3(vec.x, 0, vec.y);
+
+            if (lockState == false)
+            {
+                //turn head
+                float rotateAngle = MyMath.AngleSigned(currentFowardPointer, translateVector, Vector3.up);
+
+                Quaternion rotateQuater = Quaternion.AngleAxis(rotateAngle, Vector3.up);
+                playerTransform.localRotation = rotateQuater * playerTransform.localRotation;
+
+                currentFowardPointer = rotateQuater * currentFowardPointer;
+            }
+
+            //move
+            translateVector = playerTransform.worldToLocalMatrix * translateVector;
+            playerTransform.Translate(translateVector * speed);
         }
 
     }
 
+    public void playerDash()
+    {
+        if (state != 1)
+        {
+            if (stateFlag != 2 && dashCoolDownTimer <= 0)
+            {
+                dashCoolDownTimer = dashCoolDown;
+                stateFlag = 2;
+                timer = DateTime.Now;
+                this.speed = speedSettings.dashSpeed;
+            }
+        }
+    }
+
     public Quaternion playerRotateTo(Vector3 lookAtPosition)
     {
-        lookAtPosition.y = playerTransform.position.y;
-        Vector3 tolookAtPosition = lookAtPosition - playerTransform.position;
+        Quaternion rotateQuater = Quaternion.identity;
 
-        float rotateAngle = MyMath.AngleSigned(currentFowardPointer, tolookAtPosition, Vector3.up);
+        if (state != 1)
+        {
+            lookAtPosition.y = playerTransform.position.y;
+            Vector3 tolookAtPosition = lookAtPosition - playerTransform.position;
 
-        Quaternion rotateQuater = Quaternion.AngleAxis(rotateAngle, Vector3.up);
-        playerTransform.rotation = rotateQuater * playerTransform.rotation;
+            float rotateAngle = MyMath.AngleSigned(currentFowardPointer, tolookAtPosition, Vector3.up);
 
-        currentFowardPointer = rotateQuater * currentFowardPointer;
+            rotateQuater = Quaternion.AngleAxis(rotateAngle, Vector3.up);
+            playerTransform.localRotation = rotateQuater * playerTransform.localRotation;
 
+            currentFowardPointer = rotateQuater * currentFowardPointer;
+        }
         return rotateQuater;
+
     }
 
     public void lockTarget(Shape target)
@@ -100,6 +133,48 @@ public class PlayerBehavior : MonoBehaviour
     {
         lockState = false;
         lockedTarget = null;
+    }
+
+    public void Attacked()
+    {
+        if (state == 0)
+        {
+            StartCoroutine(Attacked1());
+        }
+    }
+
+    private IEnumerator Attacked1()
+    {
+        DateTime timer1 = new DateTime();
+        DateTime timer2 = new DateTime();
+        TimeSpan dur1 = new TimeSpan();
+
+        float singleRoundDuration = attackedCantMoveDuration/ repeatTimes;
+
+        if (state == 0)
+        {
+            timer1 = DateTime.Now;
+            state = 1;
+        }
+
+        while(state == 1 && dur1.TotalSeconds < attackedCantMoveDuration)
+        {
+            timer2 = DateTime.Now;
+            dur1 = timer2.Subtract(timer1);
+
+            float currentLerpVal = MyMath.TriangleFunction((float)dur1.TotalSeconds, singleRoundDuration);
+
+            float newx = Mathf.Lerp(-shakeXposMax, shakeXposMax, currentLerpVal);
+            Vector3 newLocalPosition = new Vector3(this.transform.localPosition.x + newx, 
+                this.transform.localPosition.y, this.transform.localPosition.z);
+
+            this.transform.localPosition = newLocalPosition;
+
+            yield return null;
+        }
+
+        state = 0;
+        yield break;
     }
 
 }

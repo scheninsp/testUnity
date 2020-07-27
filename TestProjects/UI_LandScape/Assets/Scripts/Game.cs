@@ -9,7 +9,8 @@ public class Game : MonoBehaviour
 
     List<ShapeController> shapeControllers;
 
-    private float headLevelPosition = 0.8f;
+    private const float headLevelPosition = 0.8f;
+    private const float footLevelPositionTarget = 0.3f;
 
     public Transform playerTransform;
     Transform initialPlayerTransform = null;
@@ -85,13 +86,10 @@ public class Game : MonoBehaviour
         }
 
         Transform t = o.transform;
-        t.localPosition = new Vector3(Random.Range(-10f,10f), headLevelPosition,
+
+        t.localScale = Vector3.one * Random.Range(1f, 2f);
+        t.localPosition = new Vector3(Random.Range(-10f, 10f), footLevelPositionTarget + t.localScale.y/2,
             Random.Range(1f, 10f));
-        //t.localRotation = Random.rotation;
-        t.localScale = Vector3.one * Random.Range(0.5f, 1.5f);
-        /*o.SetColor(Random.ColorHSV(hueMin: 0f, hueMax: 1f,
-            saturationMin: 0.5f, saturationMax: 1f, valueMin: 0.25f, valueMax: 1f,
-            alphaMin: 1f, alphaMax: 1f));*/
 
         shapeControllers.Add(o);
 
@@ -159,7 +157,7 @@ public class Game : MonoBehaviour
     {
         if (shapeControllers.Count > 0 && shapeControllers[shapeControllers.Count-1].state == 1)
         {
-            shapeControllers[shapeControllers.Count - 1].Attack();
+            shapeControllers[shapeControllers.Count - 1].Attack1();
         }
 
     }

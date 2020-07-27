@@ -7,14 +7,21 @@ public class Shape : MonoBehaviour
 {
     MeshRenderer meshRenderer;
 
-    private DateTime timer1;
-    private DateTime timer2;
-    private TimeSpan dur1;
-
     //state 0: normal
     //state 1: warning
     //state 2: attacking
-    private int state = 0;
+    public int state = 0;
+
+    private const float attackerZscaleMax = 4.8f;
+    private float attackerXYScale;
+    private float halfZsize;
+
+    private const int warningObjectChildIndex = 1;
+    private const int attackerObjectChildIndex = 2;
+
+    private const float warningDuration = 2f;
+    private const int warningRepeatTimes = 2;
+    private const float attackDuration = 1f;
 
     private void Awake()
     {
@@ -23,6 +30,9 @@ public class Shape : MonoBehaviour
         {
             this.transform.GetChild(i).gameObject.SetActive(false);
         }
+
+        halfZsize = this.transform.localScale.z / 2;
+        attackerXYScale = this.transform.GetChild(attackerObjectChildIndex).localScale.x;
     }
 
     public void SetMaterial(Material material)
@@ -58,42 +68,73 @@ public class Shape : MonoBehaviour
             this.transform.GetChild(i).gameObject.SetActive(false);
         }
         state = 0;
-        dur1 = new TimeSpan();
-
+        this.transform.rotation = new Quaternion(0, 0, 0, 0);
     }
 
-    public void StartWarning()
+    public void StartAttack1()
     {
         if(state == 0)
         {
-            StartCoroutine(Warning1());
+            StartCoroutine(Attack1());
         }
     }
 
-    private IEnumerator Warning1()
+    private IEnumerator Attack1()
     {
+        DateTime timer1 = new DateTime();
+        DateTime timer2 = new DateTime(); 
+        TimeSpan dur1 = new TimeSpan(); 
+
+        //enter Warning state
         if (state == 0)
         {
             timer1 = DateTime.Now;
             state = 1;
-            this.transform.GetChild(1).gameObject.SetActive(true);
+            this.transform.GetChild(warningObjectChildIndex).gameObject.SetActive(true);
         }
 
-        while(state == 1 && dur1.TotalSeconds < 2.01f)
+        //In warning state
+        while(state == 1 && dur1.TotalSeconds < warningDuration +0.01f)
         {
             timer2 = DateTime.Now;
             dur1 = timer2.Subtract(timer1);
 
+            float currentLerpVal = MyMath.TriangleFunction((float)dur1.TotalSeconds, warningDuration / warningRepeatTimes);
+
+            Color newColor = this.transform.GetChild(1).GetComponent<SpriteRenderer>().color;
+            newColor.a = Mathf.Lerp(60 / 255f, 160 / 255f, currentLerpVal);
+            this.transform.GetChild(warningObjectChildIndex).GetComponent<SpriteRenderer>().color = newColor;
+
+            yield return null;
+        }
+
+        //enter Attack state
+        state = 2;
+        timer1 = DateTime.Now;
+        dur1 = new TimeSpan();
+        this.transform.GetChild(warningObjectChildIndex).gameObject.SetActive(false);
+        this.transform.GetChild(attackerObjectChildIndex).gameObject.SetActive(true);
+
+        //In attack state
+        while (state == 2 && dur1.TotalSeconds < attackDuration + 0.01f)
+        {
+            timer2 = DateTime.Now;
+            dur1 = timer2.Subtract(timer1);
+
+            float currentLerpVal = MyMath.TriangleFunction((float)dur1.TotalSeconds, attackDuration);
+            /*
             float currentLerpVal = (float)dur1.TotalSeconds;
             currentLerpVal = 2 * (currentLerpVal - Mathf.Floor(currentLerpVal));
             if (currentLerpVal > 1f)
             {
                 currentLerpVal = -currentLerpVal + 2;
-            }
+            }*/
 
-            Color newColor = this.transform.GetChild(1).GetComponent<SpriteRenderer>().color;
-            newColor.a = Mathf.Lerp(60 / 255f, 160 / 255f, currentLerpVal);
-            this.transform.GetChild(1).GetComponent<SpriteRenderer>().color = newColor;
+            Vector3 newScale = new Vector3(attackerXYScale, attackerXYScale, Mathf.Lerp(0, attackerZscaleMax, currentLerpVal));
+            Vector3 newPosition = new Vector3(0,0, -halfZsize - newScale.z/2);
+
+            this.transform.GetChild(attackerObjectChildIndex).transform.localPosition = newPosition;
+            this.transform.GetChild(attackerObjectChildIndex).transform.localScale = newScale;
 
             yield return null;
         }
@@ -101,13 +142,11 @@ public class Shape : MonoBehaviour
         //exit
         state = 0;
         dur1 = new TimeSpan();
-        this.transform.GetChild(1).gameObject.SetActive(false);
+        this.transform.GetChild(warningObjectChildIndex).gameObject.SetActive(false);
+        this.transform.GetChild(attackerObjectChildIndex).gameObject.SetActive(false);
         yield break;
 
     }
 
-    public void Attack()
-    {
 
-    }
 }
