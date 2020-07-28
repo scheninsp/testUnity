@@ -12,8 +12,8 @@ public class PlayerBehavior : MonoBehaviour
 
     public class speedSettings
     {
-        public static float moveSpeed = 0.1f;
-        public static float dashSpeed = 0.2f;
+        public static float moveSpeed = 4f;
+        public static float dashSpeed = 8f;
     }
     float speed = speedSettings.moveSpeed;
 
@@ -65,11 +65,11 @@ public class PlayerBehavior : MonoBehaviour
 
     }
 
-    public void playerMove(Vector2 vec)
-    {
+    public void playerMove(Vector3 vec)
+    { //vec : world space moving direction
         if(state != 1)
         {
-            Vector3 translateVector = new Vector3(vec.x, 0, vec.y);
+            Vector3 translateVector = vec;
 
             if (lockState == false)
             {
@@ -84,7 +84,8 @@ public class PlayerBehavior : MonoBehaviour
 
             //move
             translateVector = playerTransform.worldToLocalMatrix * translateVector;
-            playerTransform.Translate(translateVector * speed);
+            translateVector.Normalize();
+            playerTransform.Translate(translateVector * speed * Time.deltaTime);
         }
 
     }

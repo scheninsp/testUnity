@@ -42,12 +42,13 @@ public class ShapeController : MonoBehaviour
     const int destructedShapeChildIndex = 1;
 
     private Transform playerTransform;
-    Vector3 currentFowardPointer;  //in world space
+    public Vector3 currentFowardPointer;  //in world space
 
     public class speedSettings
     {
-        public static float moveSpeed = 0.005f;
-        public static float dashSpeed = 0.1f;
+        public static float moveSpeed = 3f;
+        public static float dashSpeed = 6f;
+        public static float autoLeaveSpeed = 3f;
     }
     float speed = speedSettings.moveSpeed;
 
@@ -57,6 +58,16 @@ public class ShapeController : MonoBehaviour
 
     const float attack1CoolDown = 2f;
     float attackCoolDownTimer = -1f;
+
+    //shapeNearbyState 0 : nothing nearby
+    //shapeNearbyState 1 : nearby targets in same direction
+    //shapeNearbyState 2 : nearby targets in different direction
+    public int shapeNearbyState = 0;
+
+    public Vector3 normalizedLeavingDirection;
+
+    //movingState 0 : leaving nearby object
+    public int movingState = 0;
 
     void Awake()
     {
@@ -80,10 +91,23 @@ public class ShapeController : MonoBehaviour
             Vector3 vecToPlayer = playerTransform.position - this.transform.position;
             vecToPlayer.y = 0;
 
-            if (vecToPlayer.magnitude > minDistanceToPlayer)
+            //Actions
+            if (shapeNearbyState == 0 && (vecToPlayer.magnitude > minDistanceToPlayer))
             {
                 AutoMove();
             }
+            else if(shapeNearbyState == 1)
+            {
+                if(movingState == 0)
+                {
+                    StartCoroutine(startLeaving());
+                }
+            }
+            else if(shapeNearbyState == 2)
+            {
+                //no moving
+            }
+
 
             float angleToPlayer = Vector3.Angle(currentFowardPointer, vecToPlayer);
             if (angleToPlayer > 0.2f)
@@ -96,6 +120,8 @@ public class ShapeController : MonoBehaviour
                 Attack1();
                 attackCoolDownTimer = attack1CoolDown;
             }
+
+            //Timers
             if(attackCoolDownTimer > 0)
             {
                 attackCoolDownTimer -= Time.deltaTime;
@@ -128,6 +154,8 @@ public class ShapeController : MonoBehaviour
         this.transform.GetChild(shapeChildIndex).gameObject.SetActive(true);
         this.transform.GetChild(destructedShapeChildIndex).gameObject.SetActive(false);
         state = 1;
+        shapeNearbyState = 0;
+        movingState = 0;
     }
 
     public void Attack1()
@@ -146,10 +174,11 @@ public class ShapeController : MonoBehaviour
         {
             Vector3 translateVector = playerTransform.position - this.transform.position;
             translateVector.y = 0;
+            translateVector.Normalize();
 
             //move
             translateVector = this.transform.worldToLocalMatrix * translateVector;
-            this.transform.Translate(translateVector * speed);
+            this.transform.Translate(translateVector * speed * Time.deltaTime);
         }
 
     }
@@ -170,5 +199,34 @@ public class ShapeController : MonoBehaviour
             currentFowardPointer = rotateQuater * currentFowardPointer;
 
         }
+    }
+
+    public void AutoLeaveNearest(Vector3 noramlizedLeavingDir)
+    {
+        if (this.transform.GetChild(shapeChildIndex).GetComponent<Shape>().state == 0)
+        {
+            //add a small random direction
+            //noramlizedLeavingDir.x += Random.Range(0, 0.01f);
+            //noramlizedLeavingDir.z += Random.Range(0, 0.01f);
+
+            //noramlizedLeavingDir.Normalize();
+
+            //leave nearest
+            noramlizedLeavingDir = this.transform.worldToLocalMatrix * noramlizedLeavingDir;
+            this.transform.Translate(noramlizedLeavingDir * speedSettings.autoLeaveSpeed * Time.deltaTime);
+        }
+    }
+
+    private IEnumerator startLeaving()
+    {
+        movingState = 1;
+        yield return new WaitForSeconds(0.2f);
+        while (shapeNearbyState == 1)
+        {
+            AutoLeaveNearest(normalizedLeavingDirection);
+            yield return null;
+        }
+        movingState = 0;
+        yield break;
     }
 }

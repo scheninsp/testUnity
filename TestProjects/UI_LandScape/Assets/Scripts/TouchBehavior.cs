@@ -26,8 +26,8 @@ public class TouchBehavior : MonoBehaviour
     private string debugInfoTextDefault = "Touch Debug Info";
     private string debugInfoTextLeftPanelTouched = "LeftPanel Touched";
     private string debugInfoTextLeftPanelMoved = "LeftPanel Moved";
-    private string debugInfoTextLeftPanelUntouched = "LeftPanel Untouched";
-
+    private string debugInfoTextUpperRightPanelTouched = "UpperRightPanel Touched";
+    private string debugInfoTextUpperRightPanelMoved = "UpperRightPanel Moved";
 
     private Color color1 = new Color(57/255f, 167/255f, 217/255f, 60/255f);
     private Color color2 = new Color(57/255f, 167/255f, 217/255f, 150/255f);
@@ -38,6 +38,11 @@ public class TouchBehavior : MonoBehaviour
     private Vector2 moveLeftPanelPointerVector;
     float screenToUiScaler;
 
+    public Image cameraRoller;
+    public Camera mainCamera;
+    private Vector2 upperRightTouchLastPosition, upperRightTouchCurrentPosition;
+    private Vector2 cameraRollerPointerVector;
+    bool cameraRollerPressed;
 
     private void Awake()
     {
@@ -54,6 +59,7 @@ public class TouchBehavior : MonoBehaviour
         leftPanelPressed = false;
         someTouchLeavesLeftPanel = false;
         debugInfoText.text = null;
+        cameraRollerPressed = false;
 
         touchCounts = Input.touchCount;
         
@@ -99,30 +105,37 @@ public class TouchBehavior : MonoBehaviour
                         }
                     }
 
+                    else if (tmpRefPointedObject.name == cameraRoller.name)
+                    {
+                        cameraRollerPressed = true;
+                        processCameraRoller(theTouch);
+                    }
+
+
                 }
 
             }//end iTouch = 0~touchCounts
 
             if (leftPanelPressed == false)
             {
-                //debugInfoText.text = debugInfoTextLeftPanelUntouched;
-
                 leftPanelPointer.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
                 leftPanelRoller.color = color1;
-                //leftPanelPressed = false;
+            }
+
+            if(cameraRollerPressed == false && mainCamera.GetComponent<CameraBehavior>().state == 2)
+            {
+                mainCamera.GetComponent<CameraBehavior>().stopRotate();
             }
 
         }
        
     }
 
-    public void processLeftPanel(Touch theTouch)
+    private void processLeftPanel(Touch theTouch)
     {
         if (theTouch.phase == TouchPhase.Began)
         {
             //began touch
-            debugInfoText.text = theTouch.phase.ToString();
-
             touchLastPosition = theTouch.position;
             touchCurrentPosition = theTouch.position;
 
@@ -164,16 +177,19 @@ public class TouchBehavior : MonoBehaviour
 
             leftPanelPointer.GetComponent<RectTransform>().anchoredPosition = tmpMoveVector;
 
+            Vector3 moveDir = new Vector3(tmpDir.x, 0, tmpDir.y);
+            Quaternion cameraYAxisRotation = Quaternion.Euler(0,mainCamera.transform.rotation.eulerAngles.y,0);
+            moveDir = cameraYAxisRotation * moveDir;
 
             //player control
-            playerBehavior.playerMove(tmpDir);
+            playerBehavior.playerMove(moveDir);
         }
 
 
     }
 
 
-    public GameObject GetFirstPickGameObject(Vector2 position)
+    private GameObject GetFirstPickGameObject(Vector2 position)
     {
         EventSystem eventSystem = EventSystem.current;
         PointerEventData pointerEventData = new PointerEventData(eventSystem);
@@ -186,4 +202,36 @@ public class TouchBehavior : MonoBehaviour
         return null;
     }
 
+
+    private void processCameraRoller(Touch theTouch)
+    {
+        if (theTouch.phase == TouchPhase.Began)
+        {
+            //began touch
+            upperRightTouchLastPosition = theTouch.position;
+            upperRightTouchCurrentPosition = theTouch.position;
+
+            debugInfoText.text = debugInfoTextUpperRightPanelTouched;
+        }
+
+        if (theTouch.phase == TouchPhase.Stationary || theTouch.phase == TouchPhase.Moved)
+        {
+            //moved touch
+            upperRightTouchCurrentPosition = theTouch.position;
+
+            debugInfoText.text = debugInfoTextUpperRightPanelMoved;
+
+            cameraRollerPointerVector.x = upperRightTouchCurrentPosition.x - upperRightTouchLastPosition.x;
+            cameraRollerPointerVector.y = upperRightTouchCurrentPosition.y - upperRightTouchLastPosition.y;
+
+            Vector2 tmpDir = cameraRollerPointerVector.normalized;
+            float tmpLength = cameraRollerPointerVector.magnitude;
+
+            if (tmpLength > 50f)
+            {
+                mainCamera.GetComponent<CameraBehavior>().startRotate(tmpDir);
+            }
+        }
+
+    }
 }

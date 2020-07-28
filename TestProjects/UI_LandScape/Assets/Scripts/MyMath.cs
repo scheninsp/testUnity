@@ -26,4 +26,19 @@ public class MyMath
 
         return currentLerpVal;
     }
+
+    public static float TransformAngle(float deg)
+    {   //change angle , match (0-180) to(0-180), (180-360) to (-180,-0)
+        //0 = -180; 180 = 360, be careful don't use these values as threshold
+        float angle = deg - 180;
+
+        if (angle > 0)
+        {
+            return angle - 180;
+        }
+        else
+        {
+            return angle + 180;
+        }
+    }
 }
