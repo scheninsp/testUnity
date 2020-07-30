@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3ba9d40255e37854e853ce8c04c7183a, type: 3}
+  m_Name: Target Controller Factory
+  m_EditorClassIdentifier: 
+  prefabs:
+  - {fileID: 9007159917375465497, guid: 03d15afef4269134c9225c3d6fc93944, type: 3}
+  materials:
+  - {fileID: 2100000, guid: bf14e1fe1099513469ef9abb589be4a8, type: 2}
+  recycle: 1
