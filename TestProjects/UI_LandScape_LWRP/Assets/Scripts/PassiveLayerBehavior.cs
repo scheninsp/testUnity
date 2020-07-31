@@ -8,13 +8,11 @@ public class PassiveLayerBehavior : MonoBehaviour
     private LockImage lockImageInst = null;
 
     private Camera mainCamera;
-    private Camera uiCamera;
     private RectTransform layer2PassiveCanvas;
 
     private void Start()
     {
         mainCamera = GameObject.Find("Main Camera").GetComponent<Camera>();
-        uiCamera = GameObject.Find("UI Camera").GetComponent<Camera>();
         layer2PassiveCanvas = GetComponent<RectTransform>();
     }
 
@@ -25,7 +23,7 @@ public class PassiveLayerBehavior : MonoBehaviour
         {
             lockImageInst = Instantiate(lockImageClass) as LockImage ;
             lockImageInst.transform.SetParent(this.gameObject.transform, false);
-            lockImageInst.Initialize(mainCamera, uiCamera, layer2PassiveCanvas);
+            lockImageInst.Initialize(mainCamera, layer2PassiveCanvas);
         }
 
         lockImageInst.gameObject.SetActive(true);

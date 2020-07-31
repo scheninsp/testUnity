@@ -37,9 +37,6 @@ public class AttackerBehavior : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-    }
 
     IEnumerator Attack1()
     {

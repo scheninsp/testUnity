@@ -151,6 +151,10 @@ public class CameraBehavior : MonoBehaviour
     {
         state = 1;
         targetTransform = trans;
+
+        //incase the camera has already manually rotated
+        offset = InitialOffset;
+        this.transform.rotation = initialCameraRotation;
     }
 
     public void unlockTarget()

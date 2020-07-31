@@ -9,13 +9,11 @@ public class LockImage : MonoBehaviour
     private Vector2 DefaultPosition = new Vector2(1200f, -400f);
 
     private Camera mainCamera = null;
-    private Camera uiCamera = null;
     private RectTransform layer2PassiveCanvas = null;
     
-    public void Initialize(Camera main, Camera ui, RectTransform canvas)
+    public void Initialize(Camera main, RectTransform canvas)
     {
         mainCamera = main;
-        uiCamera = ui;
         layer2PassiveCanvas = canvas;
     }
 
@@ -29,7 +27,7 @@ public class LockImage : MonoBehaviour
 
         Vector2 localPosition;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            layer2PassiveCanvas, screenPosition, uiCamera, out localPosition);
+            layer2PassiveCanvas, screenPosition, null, out localPosition);  //overlay mode
 
         
         //GetComponent<RectTransform>().anchoredPosition = DefaultPosition;
