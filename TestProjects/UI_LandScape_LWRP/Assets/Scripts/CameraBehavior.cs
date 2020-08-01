@@ -13,6 +13,7 @@ public class CameraBehavior : MonoBehaviour
     //state 0 : follow character
     //state 1 : lock target
     //state 2 : manually rotating
+    [HideInInspector]
     public int state = 0;
 
     public class rotateSpeed

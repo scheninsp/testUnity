@@ -976,7 +976,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 100
   field of view: 30
   orthographic: 0
   orthographic size: 5
@@ -6406,7 +6406,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 1430826456}
-  AttackerEffect: {fileID: 0}
+  AttackerEffect: {fileID: 851281256}
 --- !u!95 &1042916898
 Animator:
   serializedVersion: 3
@@ -6452,7 +6452,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1146361679}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 1301386320, guid: f70555f144d8491a825f0804e09c671c, type: 3}
   m_Name: 

@@ -69,6 +69,8 @@ public class ShapeController : MonoBehaviour
     //movingState 0 : leaving nearby object
     public int movingState = 0;
 
+    WaitForSeconds delayLeaving = new WaitForSeconds(0.2f);
+
     void Awake()
     {
         this.transform.GetChild(shapeChildIndex).gameObject.SetActive(true);
@@ -138,6 +140,8 @@ public class ShapeController : MonoBehaviour
         this.transform.GetChild(destructedShapeChildIndex).gameObject.SetActive(true);
         this.transform.GetChild(destructedShapeChildIndex).GetComponent<DestructedShape>().Explode(normalizedDirection);
         state = 2;
+        shapeNearbyState = 0;
+        movingState = 0;
     }
 
     public void SetMaterial(Material material, int materialId)
@@ -220,7 +224,7 @@ public class ShapeController : MonoBehaviour
     private IEnumerator startLeaving()
     {
         movingState = 1;
-        yield return new WaitForSeconds(0.2f);
+        yield return delayLeaving;
         while (shapeNearbyState == 1)
         {
             AutoLeaveNearest(normalizedLeavingDirection);

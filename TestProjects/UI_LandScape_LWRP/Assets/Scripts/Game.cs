@@ -9,6 +9,7 @@ public class Game : MonoBehaviour
     public TargetControllerFactory targetFactory;
 
     List<ShapeController> shapeControllers;
+    List<int> activeShapeIndexList = new List<int>();
 
     private const float headLevelPosition = 0.8f;
     private const float footLevelPositionTarget = 0.3f;
@@ -27,10 +28,23 @@ public class Game : MonoBehaviour
     const float minDistBetweenTargets = 3f;
     const float minDistStopLeaving = 4f;
 
+    public static Game Instance { get; private set; }
+
     void Awake()
     {
-        shapeControllers = new List<ShapeController>();
-        Application.targetFrameRate = 60;
+        if(Instance == null)
+        {
+            Instance = this;
+            shapeControllers = new List<ShapeController>();
+            Application.targetFrameRate = 60;
+
+            //keep object while switching between scenes
+            DontDestroyOnLoad(gameObject);  
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     void Start()
@@ -42,29 +56,66 @@ public class Game : MonoBehaviour
     {
         int tmp = 1;  //an entrance for debugger
 
-        if(shapeControllers.Count == 0 || 
-            (playerLockedTargetIndex>=0 && shapeControllers[playerLockedTargetIndex].state != 1))
+        if (playerLockedTargetIndex >= 0 && 
+            (shapeControllers.Count == 0 || shapeControllers[playerLockedTargetIndex].state != 1))
         {
             unlockTarget();
         }
 
         //reclaim state 0 shapeControllers
-        for(int i=0; i<shapeControllers.Count; i++)
+        int i1 = 0;
+        int currentLastPos = shapeControllers.Count;
+        while ( i1 < currentLastPos )
         {
-            if(shapeControllers[i].state == 0)
+            if(shapeControllers[i1].state == 0)
             {
-                targetFactory.Reclaim(shapeControllers[i]);
-                shapeControllers.RemoveAt(i);
+                //Reclaim i
+                targetFactory.Reclaim(shapeControllers[i1]);
+                //set List[i] <- List[last]
+                int lastIndex = currentLastPos - 1;
+
+                if (i1 < lastIndex)
+                {
+                    shapeControllers[i1] = shapeControllers[lastIndex];
+                    if (lastIndex == playerLockedTargetIndex)
+                    {
+                        playerLockedTargetIndex = i1;
+                    }
+                }
+                //remove List[last]
+                shapeControllers.RemoveAt(lastIndex);
+                currentLastPos--;
+            }
+            else
+            {
+                i1++;
             }
         }
 
-        if (shapeControllers.Count == 2)
+        activeShapeIndexList.Clear();
+        for (int i = 0; i<shapeControllers.Count; i++)
         {
-            float Shape1_x = shapeControllers[0].transform.position.x;
-            float Shape1_z = shapeControllers[0].transform.position.z;
+            if (shapeControllers[i].state == 1)
+            {
+                activeShapeIndexList.Add(i);
+            }
+        }
 
-            float Shape2_x = shapeControllers[1].transform.position.x;
-            float Shape2_z = shapeControllers[1].transform.position.z;
+        if (activeShapeIndexList.Count == 1)
+        {
+            shapeControllers[activeShapeIndexList[0]].shapeNearbyState = 0;
+        }
+
+        if (activeShapeIndexList.Count == 2)
+        {
+            int k0 = activeShapeIndexList[0];
+            int k1 = activeShapeIndexList[1];
+
+            float Shape1_x = shapeControllers[k0].transform.position.x;
+            float Shape1_z = shapeControllers[k0].transform.position.z;
+
+            float Shape2_x = shapeControllers[k1].transform.position.x;
+            float Shape2_z = shapeControllers[k1].transform.position.z;
 
             Vector2 xzPlaneDistVec = new Vector2(Shape2_x - Shape1_x,
                     Shape2_z - Shape1_z);
@@ -72,21 +123,21 @@ public class Game : MonoBehaviour
             if (xzPlaneDistVec.magnitude < minDistBetweenTargets)
             {
 
-                shapeControllers[1].shapeNearbyState = 1;
-                Vector3 distVec = shapeControllers[1].transform.position
-                    - shapeControllers[0].transform.position;
+                shapeControllers[k1].shapeNearbyState = 1;
+                Vector3 distVec = shapeControllers[k1].transform.position
+                    - shapeControllers[k0].transform.position;
                 distVec.y = 0;
 
-                shapeControllers[1].normalizedLeavingDirection = distVec.normalized;
+                shapeControllers[k1].normalizedLeavingDirection = distVec.normalized;
             }
             else
             {
-                shapeControllers[1].shapeNearbyState = 0;
+                shapeControllers[k1].shapeNearbyState = 0;
             }
         }
 
 
-        if (shapeControllers.Count > 2)
+        if (activeShapeIndexList.Count > 2)
         {
             KdTree<float, int> kDTreeShapes = new KdTree<float, int>(2, new KdTree.Math.FloatMath());
 
@@ -94,17 +145,17 @@ public class Game : MonoBehaviour
             float maxNeighborRadius = minDistStopLeaving + 1f;
 
             //add positions to KDTrees
-            for (int i = 0; i < shapeControllers.Count; i++)
+            for (int i = 0; i < activeShapeIndexList.Count; i++)
             {
-                kDTreeShapes.Add(new[] { shapeControllers[i].transform.position.x,
-                shapeControllers[i].transform.position.z }, i);
+                kDTreeShapes.Add(new[] { shapeControllers[activeShapeIndexList[i]].transform.position.x,
+                shapeControllers[activeShapeIndexList[i]].transform.position.z }, i);
             }
 
             //search KDTree
-            for (int i = 0; i < shapeControllers.Count; i++)
+            for (int i = 0; i < activeShapeIndexList.Count; i++)
             {
-                float thisShape_x = shapeControllers[i].transform.position.x;
-                float thisShape_z = shapeControllers[i].transform.position.z;
+                float thisShape_x = shapeControllers[activeShapeIndexList[i]].transform.position.x;
+                float thisShape_z = shapeControllers[activeShapeIndexList[i]].transform.position.z;
            
                 var nodes = kDTreeShapes.RadialSearch(new[] {thisShape_x, thisShape_z }, 
                                                         maxNeighborRadius, maxNeighborNumber);
@@ -154,16 +205,16 @@ public class Game : MonoBehaviour
 
                     if (minDistFlag == false)
                     {
-                        if(shapeControllers[i].movingState == 1)
+                        if(shapeControllers[activeShapeIndexList[i]].movingState == 1)
                         {
                             if(minDist > minDistStopLeaving)
                             {
-                                shapeControllers[i].shapeNearbyState = 0;
+                                shapeControllers[activeShapeIndexList[i]].shapeNearbyState = 0;
                             }
                         }
                         else
                         {
-                            shapeControllers[i].shapeNearbyState = 0;
+                            shapeControllers[activeShapeIndexList[i]].shapeNearbyState = 0;
                         }
                     }
                     else if (minDistFlag == true && vectorOpposeDirFlag == false)
@@ -176,28 +227,28 @@ public class Game : MonoBehaviour
                         }
                         leaveDir = -leaveDir;
 
-                        Vector2 forwardPointerXZ = new Vector2(shapeControllers[i].currentFowardPointer.x,
+                        Vector2 forwardPointerXZ = new Vector2(shapeControllers[activeShapeIndexList[i]].currentFowardPointer.x,
                             shapeControllers[i].currentFowardPointer.z);
 
                         //if leave direction is same as forward direction, still move
                         if (Vector2.Angle(leaveDir, forwardPointerXZ) < 90f) {
-                            shapeControllers[i].shapeNearbyState = 0;
+                            shapeControllers[activeShapeIndexList[i]].shapeNearbyState = 0;
                         }
                         else
                         {
-                            shapeControllers[i].shapeNearbyState = 1;
-                            shapeControllers[i].normalizedLeavingDirection = new Vector3(leaveDir.x, 0, leaveDir.y);
+                            shapeControllers[activeShapeIndexList[i]].shapeNearbyState = 1;
+                            shapeControllers[activeShapeIndexList[i]].normalizedLeavingDirection = new Vector3(leaveDir.x, 0, leaveDir.y);
                         }
 
                     }
                     else if (minDistFlag == true && vectorOpposeDirFlag == true)
                     {
-                        shapeControllers[i].shapeNearbyState = 2;
+                        shapeControllers[activeShapeIndexList[i]].shapeNearbyState = 2;
                     }
                 }
                 else //no nearest neighbor inside radius
                 {
-                    shapeControllers[i].shapeNearbyState = 0;
+                    shapeControllers[activeShapeIndexList[i]].shapeNearbyState = 0;
                 }
 
             } //end search KdTree
