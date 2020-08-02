@@ -8,8 +8,6 @@ public class PlayerBehavior : MonoBehaviour
     //state 2 : dash
     private int stateFlag = 1;
 
-    public Transform playerTransform;
-
     public class speedSettings
     {
         public static float moveSpeed = 4f;
@@ -23,14 +21,16 @@ public class PlayerBehavior : MonoBehaviour
     const float dashCoolDown = 0.5f;
     float dashCoolDownTimer = -1f;
 
-    Vector3 currentFowardPointer;
+    [HideInInspector]
+    public Vector3 currentFowardPointer;
 
     bool lockState = false;
     Shape lockedTarget = null;
 
     //state 0 : normal
     //state 1 : attacked
-    int state = 0;
+    [HideInInspector]
+    public int state = 0;
 
     const float shakeXposMax = 0.1f;
     const int repeatTimes = 2;
@@ -77,15 +77,15 @@ public class PlayerBehavior : MonoBehaviour
                 float rotateAngle = MyMath.AngleSigned(currentFowardPointer, translateVector, Vector3.up);
 
                 Quaternion rotateQuater = Quaternion.AngleAxis(rotateAngle, Vector3.up);
-                playerTransform.localRotation = rotateQuater * playerTransform.localRotation;
+                this.transform.localRotation = rotateQuater * this.transform.localRotation;
 
                 currentFowardPointer = rotateQuater * currentFowardPointer;
             }
 
             //move
-            translateVector = playerTransform.worldToLocalMatrix * translateVector;
+            translateVector = this.transform.worldToLocalMatrix * translateVector;
             translateVector.Normalize();
-            playerTransform.Translate(translateVector * speed * Time.deltaTime);
+            this.transform.Translate(translateVector * speed * Time.deltaTime);
         }
 
     }
@@ -110,13 +110,13 @@ public class PlayerBehavior : MonoBehaviour
 
         if (state != 1)
         {
-            lookAtPosition.y = playerTransform.position.y;
-            Vector3 tolookAtPosition = lookAtPosition - playerTransform.position;
+            lookAtPosition.y = this.transform.position.y;
+            Vector3 tolookAtPosition = lookAtPosition - this.transform.position;
 
             float rotateAngle = MyMath.AngleSigned(currentFowardPointer, tolookAtPosition, Vector3.up);
 
             rotateQuater = Quaternion.AngleAxis(rotateAngle, Vector3.up);
-            playerTransform.localRotation = rotateQuater * playerTransform.localRotation;
+            this.transform.localRotation = rotateQuater * this.transform.localRotation;
 
             currentFowardPointer = rotateQuater * currentFowardPointer;
         }

@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class AttackerBehavior : MonoBehaviour
 {
-    public Transform playerTransform;
+    [SerializeField]
+    Transform playerTransform;
 
     private Vector3 originalLocalPosition;
     private Quaternion originalLocalRotation;
@@ -13,7 +14,8 @@ public class AttackerBehavior : MonoBehaviour
 
     DateTime timer = new DateTime();
 
-    public GameObject AttackerEffect;
+    [SerializeField]
+    GameObject AttackerEffect;
 
     private bool attackingState = false;
 

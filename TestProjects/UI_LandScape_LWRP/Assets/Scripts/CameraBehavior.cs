@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class CameraBehavior : MonoBehaviour
 {
-    public Transform playerTransform;
+    [SerializeField]
+    Transform playerTransform;
 
     private Vector3 offset;
     private Vector3 InitialOffset;

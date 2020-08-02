@@ -6,10 +6,10 @@ using UnityEngine.UI;
 
 public class Skill2ButtonBehavior : MonoBehaviour, IPointerClickHandler
 {
-
-    public Text debugText;
-
-    public PlayerBehavior player;
+    [SerializeField]
+    Text debugText;
+    [SerializeField]
+    PlayerBehavior player;
 
     private string debugInfoTextSkill2DoubleClick = "Dash";
 

@@ -6,7 +6,8 @@ using KdTree;
 public class Game : MonoBehaviour
 {
 
-    public TargetControllerFactory targetFactory;
+    [SerializeField]
+    TargetControllerFactory targetFactory;
 
     List<ShapeController> shapeControllers;
     List<int> activeShapeIndexList = new List<int>();
@@ -14,16 +15,20 @@ public class Game : MonoBehaviour
     private const float headLevelPosition = 0.8f;
     private const float footLevelPositionTarget = 0.3f;
 
-    public Transform playerTransform;
+    [SerializeField]
+    Transform playerTransform;
     Transform initialPlayerTransform = null;
 
-    public PlayerBehavior playerBehavior;
+    [SerializeField]
+    PlayerBehavior playerBehavior;
 
-    public PassiveLayerBehavior passiveLayerBehavior;
+    [SerializeField]
+    PassiveLayerBehavior passiveLayerBehavior;
 
     int playerLockedTargetIndex = -1;
 
-    public Camera mainCamera;
+    [SerializeField]
+    Camera mainCamera;
 
     const float minDistBetweenTargets = 3f;
     const float minDistStopLeaving = 4f;

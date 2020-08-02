@@ -10,6 +10,7 @@ public class Shape : MonoBehaviour
     //state 0: normal
     //state 1: warning
     //state 2: attacking
+    [HideInInspector]
     public int state = 0;
 
     private const float attackerZscaleMax = 4.8f;

@@ -5,23 +5,24 @@ using System.Collections.Generic;
 
 public class TouchBehavior : MonoBehaviour
 {
+    [SerializeField]
+    Text debugInfoText;
 
-    public Text debugInfoText;
+    [SerializeField]
+    Image leftPanelBackGround;
 
-    public Image leftPanelBackGround;
-
-    public Image leftPanelRoller;
+    [SerializeField]
+    Image leftPanelRoller;
     float radiusleftPanelRoller;
     bool leftPanelPressed = false;
     bool someTouchLeavesLeftPanel = false;
 
-    public Image leftPanelPointer;
+    [SerializeField]
+    Image leftPanelPointer;
     float radiusleftPanelPointer;
 
-    //public Image rightPanelBackGround;
-    //public Button attackButton;
-
-    public PlayerBehavior playerBehavior;
+    [SerializeField]
+    PlayerBehavior playerBehavior;
 
     private string debugInfoTextDefault = "Touch Debug Info";
     private string debugInfoTextLeftPanelTouched = "LeftPanel Touched";
@@ -38,8 +39,11 @@ public class TouchBehavior : MonoBehaviour
     private Vector2 moveLeftPanelPointerVector;
     float screenToUiScaler;
 
-    public Image cameraRoller;
-    public Camera mainCamera;
+    [SerializeField]
+    Image cameraRoller;
+    [SerializeField]
+    Camera mainCamera;
+
     private Vector2 upperRightTouchLastPosition, upperRightTouchCurrentPosition;
     private Vector2 cameraRollerPointerVector;
     bool cameraRollerPressed;

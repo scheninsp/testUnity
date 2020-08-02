@@ -36,12 +36,15 @@ public class ShapeController : MonoBehaviour
     //state 0 : both not activated
     //state 1 : shape activated, destructedShape deactivated
     //state 2 : shape deactivated, destructedShape activated
+    [HideInInspector]
     public int state = 0;
 
     const int shapeChildIndex = 0;
     const int destructedShapeChildIndex = 1;
 
     private Transform playerTransform;
+
+    [HideInInspector]
     public Vector3 currentFowardPointer;  //in world space
 
     public class speedSettings

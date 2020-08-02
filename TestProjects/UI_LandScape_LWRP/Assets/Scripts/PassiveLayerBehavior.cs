@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class PassiveLayerBehavior : MonoBehaviour
 {
-    public LockImage lockImageClass;
+    [SerializeField]
+    LockImage lockImageClass;
+
     private LockImage lockImageInst = null;
 
     private Camera mainCamera;
