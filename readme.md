@@ -1,7 +1,7 @@
 # testUnity
 a test library for Unity  
   
-If pictures doesn't show up , pleas add 
+If pictures don't show up , pleas add 
 > <div style="display: inline">151.101.76.133 raw.githubusercontent.com</div>   
 to your host. 
   
