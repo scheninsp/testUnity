@@ -32,3 +32,14 @@ Self-implemented render series
     <img src="TutorialProjects/transparency.PNG", width="320">
     <br>
 </p>
+  
+(5) Basic Control and Management   
+An ARPG Demo with basic control and object lifetime and behavior management
+  
+<p align="left">
+    <img src="TestProjects/UI_Landscape_LW_cap1.PNG", width="320">
+    <br>
+</p>  
+[more game clips](https://github.com/scheninsp/testUnity/tree/master/TestProjects/UI_LandScape_LWRP)  
+  
+  
