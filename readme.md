@@ -28,23 +28,33 @@ C# Tutorial and design patterns
 </p>
   
   
-(4) Render Series of Catlike Tutorial   
+(4) Render Series of Catlike Tutorial (CG)  
 Self-implemented render series  
-  
 <p align="left">
     <img src="TutorialProjects/transparency.PNG", width="320">
     <br>
 </p>
   
+
+(5) Srciptable Render Pipeline of Catlike Tutorial (HLSL)  
+Self-implemented SRP  
+[source code](https://github.com/scheninsp/testUnity/tree/master/ScriptableRenderPipeline)
+  
+<p align="left">
+    <img src="ScriptableRenderPipeline/CRP7_Reflection/crp_box_reflection.PNG", width="320">
+    <br>
+	<img src="ScriptableRenderPipeline/CRP9_BakedShadows/mixed_lighting_baked+realtime_shadows+LPPV.PNG", width="320">
+	<br>
+</p>  
     
-(5) Basic Control and Management   
-An ARPG Demo with basic control and object lifetime and behavior management
+	
+(6) Basic Control and Management   
+An ARPG Demo with basic control and object lifetime and behavior management  
+[more game clips](https://github.com/scheninsp/testUnity/tree/master/TestProjects/UI_LandScape_LWRP/)
   
 <p align="left">
     <img src="TestProjects/UI_Landscape_LW_cap1.PNG", width="320">
     <br>
 </p>  
-
-[more game clips](https://github.com/scheninsp/testUnity/tree/master/TestProjects/UI_LandScape_LWRP/UI_Landscape_LW_cap1.PNG)  
   
   
