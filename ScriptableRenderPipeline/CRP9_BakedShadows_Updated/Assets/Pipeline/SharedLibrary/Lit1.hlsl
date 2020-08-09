@@ -194,17 +194,12 @@ float MixRealtimeAndBakedShadowAttenuation(
 	float3 worldPos, bool isMainLight = false) {
 
 	float t = RealtimeToBakedShadowsInterpolator(worldPos);  //blend 
-	//float fadedRealtime = saturate(realtime+t); //realtime = 0 or 1
-	float fadedRealtime = realtime; //realtime = 0 or 1
-
+	float fadedRealtime = saturate(realtime+t); //realtime = 0 or 1
 	float4 occlusionMask = _VisibleLightOcclusionMasks[lightIndex];
 
 	float baked = dot(bakedShadows, occlusionMask);
 	bool hasBakedShadows = occlusionMask.x >= 0.0;
 
-	return fadedRealtime;
-
-	/*
 	#if defined(_SHADOWMASK)
 		if (hasBakedShadows) {
 			return min(fadedRealtime, baked);
@@ -230,7 +225,7 @@ float MixRealtimeAndBakedShadowAttenuation(
 			}
 		#endif
 	#endif
-	return fadedRealtime;*/
+	return fadedRealtime;
 }
 
 bool SkipRealtimeShadows(float3 worldPos) {
@@ -324,10 +319,6 @@ float CascadedShadowAttenuation(float3 worldPos, bool applyStrength = true) {
 	//	return 1.0;
 	//}
 	
-	float d = distance(worldPos, _WorldSpaceCameraPos);
-	float d_shadow = 1 - _GlobalShadowData.z;
-	float d_max_cascade = _CascadeCullingSpheres[_CascadeNumbers - 1].w;
-
 	if ( SkipRealtimeShadows(worldPos) ) {
 		return 1.0;
 	}
@@ -351,7 +342,7 @@ float CascadedShadowAttenuation(float3 worldPos, bool applyStrength = true) {
 		_WorldToShadowCascadeMatrices[cascadeIndex], float4(worldPos, 1.0)
 	);
 
-
+	shadowPos.xyz = shadowPos.xyz + float3(0.00001, 0.00001, 0.00001);
 
 	float attenuation;
 	#if defined(_CASCADED_SHADOWS_HARD)
@@ -360,14 +351,12 @@ float CascadedShadowAttenuation(float3 worldPos, bool applyStrength = true) {
 		attenuation = SoftShadowAttenuation(shadowPos, true);
 	#endif
 
-	return attenuation;
-	/*
 	if (applyStrength) {
 		return lerp(1, attenuation, _CascadedShadowStrength);
 	}
 	else {
 		return attenuation;   // for subtractive lighting
-	}*/
+	}
 }
 
 float3 MainLight(LitSurface s, float shadowAttenuation) {
@@ -608,12 +597,10 @@ float4 LitPassFragment(VertexOutput input,
 	#if defined(_CASCADED_SHADOWS_HARD) || defined(_CASCADED_SHADOWS_SOFT)
 		#if !(defined(LIGHTMAP_ON) && defined(_SUBTRACTIVE_LIGHTING))
 		//blend realtime shadow with baked
-		
 		float shadowAttenuation = MixRealtimeAndBakedShadowAttenuation(
 			CascadedShadowAttenuation(surface.position), bakedShadows, 
 			0, surface.position, true
 		);
-
 		color += MainLight(surface, shadowAttenuation);
 		#endif
 	#endif
