@@ -194,7 +194,7 @@ float MixRealtimeAndBakedShadowAttenuation(
 	float3 worldPos, bool isMainLight = false) {
 
 	float t = RealtimeToBakedShadowsInterpolator(worldPos);  //blend 
-	float fadedRealtime = saturate(realtime+t); //realtime = 0 or 1
+	float fadedRealtime = saturate(realtime+t); //realtime = 0 or 1, equal to 'lerp(realtime, 1, t)'
 	float4 occlusionMask = _VisibleLightOcclusionMasks[lightIndex];
 
 	float baked = dot(bakedShadows, occlusionMask);
@@ -540,7 +540,7 @@ float3 GlobalIllumination(VertexOutput input, LitSurface surface) {
 }
 
 float4 BakedShadows(VertexOutput input, LitSurface surface) {
-	#if defined(LIGHTMAP_ON)
+	#if defined(LIGHTMAP_ON) //static fragment
 		#if defined(_SHADOWMASK) || defined(_DISTANCE_SHADOWMASK)
 			return SAMPLE_TEXTURE2D(
 				unity_ShadowMask, samplerunity_ShadowMask, input.lightmapUV
