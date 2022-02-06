@@ -12,7 +12,7 @@ class Scene:
         self.initUI()
 
     def initUI(self):
-        self.grScene = QDMGraphicsScene()
+        self.grScene = QDMGraphicsScene(self)
         self.grScene.setGrScene(self.scene_width, self.scene_height)
 
     def addNode(self, node):

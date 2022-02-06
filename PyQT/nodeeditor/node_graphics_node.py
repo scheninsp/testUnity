@@ -35,6 +35,10 @@ class QDMGraphicsNode(QGraphicsItem):
 
         self.initUI()
 
+    def mouseMoveEvent(self, event: 'QGraphicsSceneMouseEvent') -> None:
+        super().mouseMoveEvent(event)
+        self.node.updateConnectedEdges()
+
     def boundingRect(self):
         # 底色方框
         return QRectF(0,0, self.width, self.height).normalized()
@@ -52,6 +56,7 @@ class QDMGraphicsNode(QGraphicsItem):
 
     def initContent(self):
         self.grContent =QGraphicsProxyWidget(self)
+        # 这个 setGeometry 有一次失效，重启电脑后正常
         self.content.setGeometry(self.edge_size, self.title_height + self.edge_size, self.width - 2* self.edge_size, self.height - 2* self.edge_size - self.title_height)
         self.grContent.setWidget(self.content)
 

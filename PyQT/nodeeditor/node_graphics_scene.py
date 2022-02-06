@@ -5,9 +5,11 @@ import math
 
 # 主窗口的 scene
 class QDMGraphicsScene(QGraphicsScene):
-    def __init__(self, parent = None):
+    def __init__(self, scene:'Scene', parent = None):
         super().__init__(parent)
         
+        self.scene = scene
+
         self.grid_size = 20
         self.grid_squares = 5
         self._color_background = QColor("#393939")
@@ -22,7 +24,7 @@ class QDMGraphicsScene(QGraphicsScene):
 
 
     def setGrScene(self, width, height):
-        self.setSceneRect(-self.scene_width//2, -self.scene_height//2, self.scene_width, self.scene_height)
+        self.setSceneRect(-width//2, -height//2, width, height)
 
 
     def drawBackground(self, painter, rect):

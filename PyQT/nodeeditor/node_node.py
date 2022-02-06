@@ -14,6 +14,7 @@ class Node:
 
         self.scene.addNode(self)
 
+        # Socket container
         self.inputs = []
         self.outputs = []
 
@@ -29,6 +30,13 @@ class Node:
             self.outputs.append(socket)
             counter += 1
 
+    @property
+    def pos(self):
+        return self.grNode.pos()
+
+    def setPos(self, x, y):
+        self.grNode.setPos(x,y)
+
 
     def getSocketPosition(self, index, position):
         if position in (LEFT_TOP, LEFT_BOTTOM):
@@ -39,10 +47,8 @@ class Node:
         y = self.grNode.title_height + self.grNode._padding + self.grNode.edge_size + index * 30
         return [x,y]
 
-    @property
-    def pos(self):
-        return self.grNode.pos()
 
-    def setPos(self, x, y):
-        self.grNode.setPos(x,y)
-
+    def updateConnectedEdges(self):
+        for socket in self.inputs + self.outputs:
+            if socket.hasEdge():
+                socket.edge.updatePositions()

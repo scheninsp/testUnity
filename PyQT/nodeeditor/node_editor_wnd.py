@@ -6,7 +6,7 @@ from node_graphics_scene import QDMGraphicsScene
 from node_graphics_view import QDMGraphicsView
 from node_scene import Scene
 from node_node import Node
-from node_edge import Edge
+from node_edge import Edge, EDGE_TYPE_BEZIER
 
 # 主窗口
 class NodeEditorWnd(QWidget):
@@ -33,8 +33,8 @@ class NodeEditorWnd(QWidget):
         node2.setPos(-75,0)
         node3.setPos(200,-100)
 
-        edge1 = Edge(self.scene, node1.outputs[0], node2.inputs[0])
-        edge2 = Edge(self.scene, node2.outputs[0], node3.inputs[1], 2)
+        edge1 = Edge(self.scene, node1.outputs[0], node2.inputs[0],EDGE_TYPE_BEZIER)
+        edge2 = Edge(self.scene, node2.outputs[0], node3.inputs[1],EDGE_TYPE_BEZIER)
 
         self.setWindowTitle("Node Editor")
         self.show()

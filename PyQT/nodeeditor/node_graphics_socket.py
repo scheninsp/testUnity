@@ -4,8 +4,10 @@ from PyQt5.QtCore import *
 
 # 从属于 Socket 类，表现
 class QDMGraphicsSocket(QGraphicsItem):
-    def __init__(self, parent = None):
-        super().__init__(parent)
+    def __init__(self, socket:'Socket'):
+        super().__init__(socket.node.grNode)
+
+        self.socket = socket
 
         self.radius = 6.0
         self.outline_width = 1.0
@@ -23,3 +25,6 @@ class QDMGraphicsSocket(QGraphicsItem):
 
     def boundingRect(self):
         return QRectF(-self.radius - self.outline_width, -self.radius - self.outline_width, 2*self.radius * self.outline_width, 2*self.radius * self.outline_width)
+
+    def mousePressEvent(self, event: 'QGraphicsSceneMouseEvent') -> None:
+        return super().mousePressEvent(event)
